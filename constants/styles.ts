@@ -4,11 +4,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+    borderRadius: 24,
   },
 
   // Header
   header: {
-    background: 'linear-gradient(90deg, #5B4BA8 0%, #4C3FAF 100%)',
     backgroundColor: '#4C3FAF', // Fallback
     paddingHorizontal: 24,
     paddingTop: 16,
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 42,
     fontWeight: '700',
     color: '#FFFFFF',
     letterSpacing: 0.3,
@@ -181,6 +181,93 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   navLabelActive: {
+    color: '#4C3FAF',
+    fontWeight: '700',
+  },
+  petImage: {
+    width: '100%',
+    height: 250,
+    marginTop: 12,
+  },
+
+  // Auth Screens (Login, Register, etc.)
+  authContainer: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  authScrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  authFormContainer: {
+    paddingHorizontal: 24,
+  },
+  authTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 8,
+    letterSpacing: -0.5,
+  },
+  authSubtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 32,
+    fontWeight: '400',
+  },
+  authInputGroup: {
+    marginBottom: 16,
+  },
+  authInput: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#1F2937',
+    fontWeight: '500',
+  },
+  authInputFocused: {
+    borderColor: '#4C3FAF',
+    shadowColor: '#4C3FAF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  authErrorContainer: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#EF4444',
+  },
+  authErrorText: {
+    color: '#DC2626',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  authButtonDisabled: {
+    opacity: 0.6,
+  },
+  authFooterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  authFooterText: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '400',
+  },
+  authFooterLink: {
+    fontSize: 14,
     color: '#4C3FAF',
     fontWeight: '700',
   },

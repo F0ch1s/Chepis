@@ -1,20 +1,55 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import { useState } from "react";
-import { supabase } from "../lib/supabaseClient"; // Asegúrate de tener esta instancia de Supabase configurada
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
+import { useState } from "react";
+import { Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import styles from "../constants/styles";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Register() {
-  const [firstName, setFirstName] = useState(""); // Nombre
-  const [lastName, setLastName] = useState(""); // Apellido
-  const [email, setEmail] = useState(""); // Correo
-  const [password, setPassword] = useState(""); // Contraseña
-  const [dob, setDob] = useState(""); // Fecha de nacimiento
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [dob, setDob] = useState(new Date(new Date().getFullYear() - 18, 0, 1));
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === "android") {
+      setShowDatePicker(false);
+    } else {
+      setShowDatePicker(true);
+    }
+    if (event.type === "set" && selectedDate) {
+      setDob(selectedDate);
+    }
+  };
 
   async function handleRegister() {
-    setErrorMsg(""); // Limpiar mensaje de error
+    setErrorMsg("");
 
-    // Intentar crear un nuevo usuario en Supabase
+    if (!firstName || !lastName || !email || !password || !userName) {
+      setErrorMsg("Por favor completa todos los campos requeridos");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMsg("Las contraseñas no coinciden");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMsg("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
+    setLoading(true);
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -22,127 +57,243 @@ export default function Register() {
 
     if (error) {
       setErrorMsg(error.message);
+      setLoading(false);
       return;
     }
 
-    // Guardar nombre, apellido y fecha de nacimiento en la base de datos
-    const { data, error: profileError } = await supabase
-      .from("profiles") // Aquí asumimos que tienes una tabla llamada "profiles" para los usuarios
-      .insert([
-        {
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          date_of_birth: dob,
-        },
-      ]);
+    const { error: profileError } = await supabase.from("users").insert([
+      {
+        full_name: firstName + " " + lastName,
+        username: userName,
+        email,
+        date_of_birth: dob.toISOString().split("T")[0],
+        created_at: new Date().toISOString(),
+        is_active: true,
+        last_login: new Date().toISOString(),
+      },
+    ]);
 
     if (profileError) {
       setErrorMsg(profileError.message);
+      setLoading(false);
       return;
     }
 
-    // Redirigir al usuario a la pantalla de login después de un registro exitoso
+    setLoading(false);
     router.push("/login");
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registro</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={authStyles.scrollContainer}>
+        <View style={authStyles.formContainer}>
+          <Text style={authStyles.title}>Crear Cuenta</Text>
+          <Text style={authStyles.subtitle}>Únete a Chepi y comienza tu viaje</Text>
 
-      <TextInput
-        placeholder="Nombre"
-        value={firstName}
-        onChangeText={setFirstName}
-        style={styles.input}
-      />
+          <View style={authStyles.inputGroup}>
+            <TextInput
+              placeholder="Nombre"
+              value={firstName}
+              onChangeText={setFirstName}
+              style={authStyles.input}
+              placeholderTextColor="#A0AEC0"
+              editable={!loading}
+            />
+          </View>
 
-      <TextInput
-        placeholder="Apellido"
-        value={lastName}
-        onChangeText={setLastName}
-        style={styles.input}
-      />
+          <View style={authStyles.inputGroup}>
+            <TextInput
+              placeholder="Apellido"
+              value={lastName}
+              onChangeText={setLastName}
+              style={authStyles.input}
+              placeholderTextColor="#A0AEC0"
+              editable={!loading}
+            />
+          </View>
 
-      <TextInput
-        placeholder="Correo"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
+          <View style={authStyles.inputGroup}>
+            <TextInput
+              placeholder="Nombre de usuario"
+              value={userName}
+              onChangeText={setUserName}
+              style={authStyles.input}
+              placeholderTextColor="#A0AEC0"
+              editable={!loading}
+            />
+          </View>
 
-      <TextInput
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-      />
+          <View style={authStyles.inputGroup}>
+            <TextInput
+              placeholder="Correo electrónico"
+              value={email}
+              onChangeText={setEmail}
+              style={authStyles.input}
+              placeholderTextColor="#A0AEC0"
+              keyboardType="email-address"
+              editable={!loading}
+            />
+          </View>
 
-      <TextInput
-        placeholder="Fecha de nacimiento (YYYY-MM-DD)"
-        value={dob}
-        onChangeText={setDob}
-        style={styles.input}
-      />
+          <View style={authStyles.inputGroup}>
+            <TextInput
+              placeholder="Contraseña"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              style={authStyles.input}
+              placeholderTextColor="#A0AEC0"
+              editable={!loading}
+            />
+          </View>
 
-      {errorMsg ? <Text style={styles.errorText}>{errorMsg}</Text> : null}
+          <View style={authStyles.inputGroup}>
+            <TextInput
+              placeholder="Confirmar contraseña"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              style={authStyles.input}
+              placeholderTextColor="#A0AEC0"
+              editable={!loading}
+            />
+          </View>
 
-      <TouchableOpacity onPress={handleRegister} style={styles.button}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
-    </View>
+          <View style={authStyles.inputGroup}>
+            <TouchableOpacity
+              style={authStyles.datePickerButton}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Ionicons name="calendar" size={20} color="#4C3FAF" style={{ marginRight: 12 }} />
+              <Text style={authStyles.datePickerText}>
+                {dob.toLocaleDateString("es-ES", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={dob}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={handleDateChange}
+              maximumDate={new Date()}
+              minimumDate={new Date(1950, 0, 1)}
+            />
+          )}
+
+          {errorMsg ? (
+            <View style={authStyles.errorContainer}>
+              <Text style={authStyles.errorText}>{errorMsg}</Text>
+            </View>
+          ) : null}
+
+          <TouchableOpacity
+            onPress={handleRegister}
+            style={[styles.primaryButton, loading && authStyles.buttonDisabled]}
+            disabled={loading}
+          >
+            <Text style={styles.primaryButtonText}>{loading ? "Registrando..." : "Registrarse"}</Text>
+          </TouchableOpacity>
+
+          <View style={authStyles.footerContainer}>
+            <Text style={authStyles.footerText}>¿Ya tienes cuenta? </Text>
+            <TouchableOpacity onPress={() => router.push("/login")}>
+              <Text style={authStyles.footerLink}>Inicia sesión</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles = {
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
+const authStyles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
+    paddingVertical: 40,
+  },
+  formContainer: {
+    paddingHorizontal: 24,
   },
   title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#4C3FAF",
-    marginBottom: 30,
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#1F2937",
+    marginBottom: 8,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#6B7280",
+    marginBottom: 32,
+    fontWeight: "400",
+  },
+  inputGroup: {
+    marginBottom: 16,
   },
   input: {
-    width: "100%",
-    padding: 15,
-    marginVertical: 10,
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#ddd",
-    backgroundColor: "#fff",
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     fontSize: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    color: "#1F2937",
+    fontWeight: "500",
+  },
+  errorContainer: {
+    backgroundColor: "#FEE2E2",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: "#EF4444",
   },
   errorText: {
-    color: "red",
+    color: "#DC2626",
     fontSize: 14,
-    marginBottom: 10,
+    fontWeight: "500",
   },
-  button: {
-    width: "100%",
-    padding: 15,
-    backgroundColor: "#4CAF50",
-    borderRadius: 10,
-    marginTop: 20,
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  footerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    marginTop: 24,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 18,
+  footerText: {
+    fontSize: 14,
+    color: "#6B7280",
+    fontWeight: "400",
   },
-};
+  footerLink: {
+    fontSize: 14,
+    color: "#4C3FAF",
+    fontWeight: "700",
+  },
+  datePickerButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: "#1F2937",
+    fontWeight: "500",
+  },
+});
