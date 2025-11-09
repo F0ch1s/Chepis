@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, Flame, Play, Shuffle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Flame, Play } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SCREENS from '../constants/screens';
 import { BottomNavigation } from './BottomNavigation';
@@ -13,6 +13,38 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutos en segundos
   const [streak, setStreak] = useState(4);
   const [currentChallenge, setCurrentChallenge] = useState(0);
+  const [llamaState, setLlamaState] = useState<'agotada' | 'ansiosa' | 'estrés' | 'activa'>('activa');
+
+  const llamaStates = {
+    activa: {
+      src: '/chepi_go_activa.jpg',
+      modo: 'Activa',
+      msg: 'Tu Llama está lista para el reto',
+      btn: 'Iniciar Sesión de Enfoque',
+      btnColor: 'bg-sky-500'
+    },
+    agotada: {
+      src: '/chepi_go_cansada.png',
+      modo: 'Agotada',
+      msg : 'Tu Llama necesita recargar',
+      btn: 'IRSE A DORMIR AHORA',
+      btnColor: 'bg-[#d75c3b]'
+    },
+    ansiosa: {
+      src: '/chepi_go_ansiosa.png',
+      modo: 'Ansiedad',
+      msg : 'Tu Llama necesita parar el scroll',
+      btn: 'PARAR EL SCROLL',
+      btnColor: 'bg-[#d85450]'
+    },
+    estrés: {
+      src: '/chepi_go_estres.png',
+      modo: 'Estrés',
+      msg : 'Tu Llama necesita un respiro',
+      btn: 'DESCONECTAR AHORA',
+      btnColor: 'bg-[#e05250]'
+    },
+  };
 
   const challenges = [
     {
@@ -93,7 +125,7 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
 
-        <div className="pb-3 pb-6">
+        <div className="pb-4">
           {/* CAMBIO: Texto claro */}
           <h2 className="text-white" style={{ fontSize: '28px', fontWeight: '600' }}>
             Llama ZEN
@@ -106,26 +138,43 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
 
       {/* Content */}
       <div className="flex-1 px-6 pb-6 overflow-y-auto">
-        <div className="bg-white/5 backdrop-blur-md rounded-3xl pb-6 shadow-lg border border-white/10 mb-6">
+        {/* Estados de la Llama */}
+        <div className="mb-4 flex gap-2 justify-center">
+          {(Object.keys(llamaStates) as Array<keyof typeof llamaStates>).map((state) => (
+            <button
+              key={state}
+              onClick={() => setLlamaState(state)}
+              className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
+                llamaState === state
+                  ? 'bg-sky-400 text-white shadow-md'
+                  : 'bg-white/10 text-white/70 hover:bg-white/20'
+              }`}
+            >
+              {state.charAt(0).toUpperCase() + state.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-white/5 backdrop-blur-md rounded-3xl pb-6 shadow-lg border border-white/10 mb-3">
           <div className="flex flex-col items-center gap-4">
             <img
-              src="/llama_chepi_go.jpg"
+              src={llamaStates[llamaState].src}
               alt="Tu Llama ZEN"
               className="w-full h-auto rounded-2xl shadow-lg"
             />
             <div className="text-center">
               {/* CAMBIO: Texto blanco */}
               <h2 className="text-white" style={{ fontSize: '24px', fontWeight: '700' }}>
-                ¡Modo Activo!
+                ¡Modo {llamaStates[llamaState].modo}!
               </h2>
               <p className="text-white/80 mt-1">
-                Tu Llama está lista para el reto
+                {llamaStates[llamaState].msg}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-lg border border-white/10 mb-6">
+        <div className="bg-white/5 backdrop-blur-md rounded-3xl px-4 py-3 shadow-lg border border-white/10 mb-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Flame className="w-5 h-5 text-orange-500" />
@@ -141,8 +190,6 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             </div>
           </div>
 
-          {/* Animated Progress Bar */}
-          {/* CAMBIO: Fondo de barra de progreso sutil */}
           <div className="h-3 bg-black/30 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full transition-all duration-500"
@@ -154,9 +201,21 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             ¡Sigue así para desbloquear un accesorio!
           </p>
         </div>
+
+        <button
+          onClick={handleStart}
+          disabled={isActive}
+          // CAMBIO: Botón principal con color Sky
+          className={`w-full mb-4 py-3.5 ${llamaStates[llamaState].btnColor} text-white rounded-2xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md`}
+          style={{ fontWeight: '700' }}
+        >
+          <Play className="w-5 h-5" />
+          {isActive ? 'En curso...' : llamaStates[llamaState].btn}
+        </button>
+
         {/* Challenge Card */}
         {/* CAMBIO: Tarjeta de Reto sutil */}
-        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/10 mb-6">
+        {/* <div className="bg-white/5 backdrop-blur-md rounded-3xl px-4 py-3 shadow-lg border border-white/10 mb-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white" style={{ fontSize: '20px', fontWeight: '700' }}>
               Reto rápido
@@ -168,8 +227,6 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             {currentChallengeData.title}
           </p>
 
-          {/* Rewards */}
-          {/* CAMBIO: Recompensas con fondo sutil */}
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-xl">
               <span className="text-yellow-300" style={{ fontSize: '14px', fontWeight: '700' }}>
@@ -183,16 +240,12 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             </div>
           </div>
 
-          {/* Timer (solo visible cuando está activo) */}
           {isActive && (
-            // CAMBIO: Fondo del timer más oscuro
             <div className="mb-6 bg-black/20 rounded-2xl p-6 text-center">
               <p className="text-white/70 text-sm mb-2">Tiempo restante</p>
-              {/* CAMBIO: Color de acento Sky */}
               <div className="text-sky-400" style={{ fontSize: '48px', fontWeight: '700', letterSpacing: '-0.02em' }}>
                 {formatTime(timeLeft)}
               </div>
-              {/* CAMBIO: Barra de progreso adaptada */}
               <div className="mt-4 h-2 bg-black/30 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-sky-400 to-sky-500 rounded-full transition-all duration-1000"
@@ -202,12 +255,10 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex gap-3">
             <button
               onClick={handleStart}
               disabled={isActive}
-              // CAMBIO: Botón principal con color Sky
               className="flex-1 py-3.5 bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-2xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
               style={{ fontWeight: '700' }}
             >
@@ -217,7 +268,6 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             <button
               onClick={handleChangeChallenge}
               disabled={isActive}
-              // CAMBIO: Botón secundario sutil
               className="px-5 py-3.5 bg-white/10 text-white rounded-2xl hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               <Shuffle className="w-5 h-5" />
@@ -227,9 +277,8 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
           <p className="text-center text-white/70 text-sm mt-3">
             Cambiar reto
           </p>
-        </div>
+        </div> */}
 
-        {/* Completed Today */}
         <div className="mb-6">
           <h4 className="text-white px-2 mb-3" style={{ fontSize: '18px', fontWeight: '600' }}>
             Completados hoy
@@ -239,7 +288,6 @@ export function ChepiGoScreen({ onNavigate, onBack }: ChepiGoScreenProps) {
             {completedToday.map((item, index) => (
               <div
                 key={index}
-                // CAMBIO: Tarjeta de Completados sutil
                 className="bg-white/5 backdrop-blur-md rounded-2xl p-3 shadow-sm border border-white/10 flex items-center gap-3"
               >
                 <div className="w-9 h-9 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
