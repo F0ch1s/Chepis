@@ -11,7 +11,6 @@ export function LoginScreen({ onNavigate, onLoginSuccess }: LoginScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    // CAMBIO: Fondo de gradiente a color sólido
     <div className="h-full w-full bg-[#0c2052] flex flex-col items-center justify-center px-8 text-white">
       <img 
         src="/logo.png" 
@@ -19,12 +18,11 @@ export function LoginScreen({ onNavigate, onLoginSuccess }: LoginScreenProps) {
         className="mt-6 h-16 mx-auto mb-8"
       />
 
-      {/* Título de Login */}
       <h2 className="text-4xl font-bold mb-2">Log In</h2>
       <p className="text-white/80 mb-8">
         New to Chepi?{' '}
         <button 
-          onClick={() => onNavigate('register')} // Botón para ir a Registro
+          onClick={() => onNavigate('register')}
           className="font-bold underline"
         >
           Create an account.
@@ -35,11 +33,11 @@ export function LoginScreen({ onNavigate, onLoginSuccess }: LoginScreenProps) {
         {/* CAMPO DE EMAIL */}
         <div>
           <label className="text-xs font-bold uppercase text-white/70">EMAIL</label>
+          {/* CAMBIO: Estilo transparente con borde */}
           <input 
             type="email"
-            placeholder="hello@reallygreatsite.com"
-            // CAMBIO: Inputs un poco más oscuros para contrastar
-            className="w-full p-4 mt-2 rounded-lg bg-white/5 backdrop-blur-sm text-white placeholder-white/70 border border-white/10 focus:border-white/50 focus:outline-none"
+            placeholder=""
+            className="w-full p-4 mt-2 rounded-lg bg-transparent text-white placeholder-white/70 border border-sky-400/50 focus:border-sky-400 focus:outline-none"
           />
         </div>
 
@@ -47,11 +45,13 @@ export function LoginScreen({ onNavigate, onLoginSuccess }: LoginScreenProps) {
         <div>
           <label className="text-xs font-bold uppercase text-white/70">PASSWORD</label>
           <div className="relative">
+            {/* CAMBIO: Estilo transparente con borde */}
             <input 
               type={showPassword ? 'text' : 'password'}
-              placeholder="******"
-              className="w-full p-4 mt-2 rounded-lg bg-white/5 backdrop-blur-sm text-white placeholder-white/70 border border-white/10 focus:border-white/50 focus:outline-none"
+              placeholder=""
+              className="w-full p-4 mt-2 rounded-lg bg-transparent text-white placeholder-white/70 border border-sky-400/50 focus:border-sky-400 focus:outline-none"
             />
+            {/* CAMBIO: Icono del ojo claro */}
             <button 
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 mt-1"
@@ -63,8 +63,7 @@ export function LoginScreen({ onNavigate, onLoginSuccess }: LoginScreenProps) {
 
         {/* Botón de Log In */}
         <button 
-          onClick={onLoginSuccess} // Simula un login exitoso
-          // CAMBIO: Botón con color Sky para destacar
+          onClick={onLoginSuccess}
           className="w-full p-4 mt-4 rounded-lg border border-sky-400 text-sky-400 font-bold bg-transparent hover:bg-sky-400/20 transition-colors"
         >
           Log In

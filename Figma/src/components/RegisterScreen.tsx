@@ -11,21 +11,18 @@ export function RegisterScreen({ onNavigate, onLoginSuccess }: RegisterScreenPro
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    // CAMBIO: Fondo de gradiente a color sólido
     <div className="h-full w-full bg-[#0c2052] flex flex-col items-center justify-center px-8 text-white">
-      {/* Logo */}
       <img 
         src="/logo.png" 
         alt="Chepi Logo" 
         className="mt-6 h-16 mx-auto mb-8" 
       />
 
-      {/* Títulos */}
       <h2 className="text-4xl font-bold mb-2">Create Account</h2>
       <p className="text-white/80 mb-8">
         Already Registered?{' '}
         <button 
-          onClick={() => onNavigate('login')} // Botón para ir a Login
+          onClick={() => onNavigate('login')} 
           className="font-bold underline"
         >
           Log in here.
@@ -36,21 +33,22 @@ export function RegisterScreen({ onNavigate, onLoginSuccess }: RegisterScreenPro
         {/* CAMPO DE NOMBRE */}
         <div>
           <label className="text-xs font-bold uppercase text-white/70">NAME</label>
+          {/* CAMBIO: Estilo transparente con borde */}
           <input 
             type="text"
-            placeholder="Jiara Martins"
-            // CAMBIO: Inputs un poco más oscuros para contrastar
-            className="w-full p-4 mt-2 rounded-lg bg-white/5 backdrop-blur-sm text-white placeholder-white/70 border border-white/10 focus:border-white/50 focus:outline-none"
+            placeholder=""
+            className="w-full p-4 mt-2 rounded-lg bg-transparent text-white placeholder-white/70 border border-sky-400/50 focus:border-sky-400 focus:outline-none"
           />
         </div>
         
         {/* CAMPO DE EMAIL */}
         <div>
           <label className="text-xs font-bold uppercase text-white/70">EMAIL</label>
+          {/* CAMBIO: Estilo transparente con borde */}
           <input 
             type="email"
-            placeholder="hello@reallygreatsite.com"
-            className="w-full p-4 mt-2 rounded-lg bg-white/5 backdrop-blur-sm text-white placeholder-white/70 border border-white/10 focus:border-white/50 focus:outline-none"
+            placeholder=""
+            className="w-full p-4 mt-2 rounded-lg bg-transparent text-white placeholder-white/70 border border-sky-400/50 focus:border-sky-400 focus:outline-none"
           />
         </div>
 
@@ -58,11 +56,13 @@ export function RegisterScreen({ onNavigate, onLoginSuccess }: RegisterScreenPro
         <div>
           <label className="text-xs font-bold uppercase text-white/70">PASSWORD</label>
           <div className="relative">
+            {/* CAMBIO: Estilo transparente con borde */}
             <input 
               type={showPassword ? 'text' : 'password'}
-              placeholder="******"
-              className="w-full p-4 mt-2 rounded-lg bg-white/5 backdrop-blur-sm text-white placeholder-white/70 border border-white/10 focus:border-white/50 focus:outline-none"
+              placeholder=""
+              className="w-full p-4 mt-2 rounded-lg bg-transparent text-white placeholder-white/70 border border-sky-400/50 focus:border-sky-400 focus:outline-none"
             />
+            {/* CAMBIO: Icono del ojo claro */}
             <button 
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 mt-1"
@@ -74,8 +74,7 @@ export function RegisterScreen({ onNavigate, onLoginSuccess }: RegisterScreenPro
 
         {/* Botón de Registrarse */}
         <button 
-          onClick={onLoginSuccess} // En una app real, esto haría el registro primero
-          // CAMBIO: Botón con color Sky para destacar
+          onClick={onLoginSuccess}
           className="w-full p-4 mt-4 rounded-lg border border-sky-400 text-sky-400 font-bold bg-transparent hover:bg-sky-400/20 transition-colors"
         >
           Sign up
